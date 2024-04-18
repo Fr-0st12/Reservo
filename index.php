@@ -9,6 +9,9 @@
 
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 $serveur = "localhost";
 $utilisateur = "btssio";
 $motDePasse = "btssio";
@@ -72,8 +75,9 @@ try {
         $pnom = $_POST['pnom'];
         $tel = $_POST['tel'];
         $mail = $_POST['mail'];
+        $mdp = $_POST['mdp'];
 
-        $newUsers = "INSERT INTO users(nom, pnom, phone, mail) VALUES('$nom', '$pnom', '$tel', '$mail');";
+        $newUsers = "INSERT INTO users(nom, pnom, phone, mail, pwd) VALUES('$nom', '$pnom', '$tel', '$mail', '$mdp');";
         $stmtUsers = $connexion->prepare($newUsers);
         $stmtUsers->execute();
 
@@ -151,7 +155,7 @@ try {
             $cleaning = 0;
         }
 
-        $prix_total = $prix_total + $prix_salle_preau * $preau;
+        /*$prix_total = $prix_total + $prix_salle_preau * $preau;
         $prix_total = $prix_total + $prix_salle_terrain * $terrain;
         $prix_total = $prix_total + $prix_salle_15 * $salle_15;
         $prix_total = $prix_total + $prix_salle_centre_culturelle_1 * $cc1;
@@ -164,7 +168,45 @@ try {
         $prix_total = $prix_total + $prix_equipement_chapteau_2 * $chapiteau_3x4;
         $prix_total = $prix_total + $prix_equipement_chapteau_3 * $chapiteau_3x6;
         $prix_total = $prix_total + $prix_options_mise_en_place * $setup;
-        $prix_total = $prix_total + $prix_options_nettoyage * $cleaning;
+        $prix_total = $prix_total + $prix_options_nettoyage * $cleaning;*/
+
+        echo'
+        <script>
+
+        var prix_salle_preau = <?php echo $prix_salle_preau; ?>;
+        var prix_salle_terrain = <?php echo $prix_salle_terrain; ?>;
+        var prix_salle_15 = <?php echo $prix_salle_15; ?>;
+        var prix_salle_centre_culturelle_1 = <?php echo $prix_salle_centre_culturelle_1; ?>;
+        var prix_salle_preau_cc2 = <?php echo $prix_salle_preau; ?>;
+        var prix_equipement_chaise = <?php echo $prix_equipement_chaise; ?>;
+        var prix_equipement_table = <?php echo $prix_equipement_table; ?>;
+        var prix_equipement_haut_parleur = <?php echo $prix_equipement_haut_parleur; ?>;
+        var prix_equipement_micro = <?php echo $prix_equipement_micro; ?>;
+        var prix_equipement_chapiteau_1 = <?php echo $prix_equipement_chapiteau_1; ?>;
+        var prix_equipement_chapiteau_2 = <?php echo $prix_equipement_chapiteau_2; ?>;
+        var prix_equipement_chapiteau_3 = <?php echo $prix_equipement_chapiteau_3; ?>;
+        var prix_options_mise_en_place = <?php echo $prix_options_mise_en_place; ?>;
+        var prix_options_nettoyage = <?php echo $prix_options_nettoyage; ?>;
+
+        var total = 0;
+        total += prix_salle_preau * preau;
+        total += prix_salle_terrain * terrain;
+        total += prix_salle_15 * salle_15;
+        total += prix_salle_centre_culturelle_1 * cc1;
+        total += prix_salle_preau_cc2 * cc2;
+        total += prix_equipement_chaise * chaise;
+        total += prix_equipement_table * table;
+        total += prix_equipement_haut_parleur * haut_parleurs;
+        total += prix_equipement_micro * micro;
+        total += prix_equipement_chapiteau_1 * chapiteau_3x3;
+        total += prix_equipement_chapiteau_2 * chapiteau_3x4;
+        total += prix_equipement_chapiteau_3 * chapiteau_3x6;
+        total += prix_options_mise_en_place * setup;
+        total += prix_options_nettoyage * cleaning;
+
+        console.log("Le total est : " + total);
+
+        </script>';
         
         $newRes = "INSERT INTO reservations(date_d, date_f, préau, terrain, salle_15, cc1, cc2, chaises, tables, haut_parleurs, micro, chapiteau_3x3, chapiteau_3x4, chapiteau_3x6, setup, cleaning, prix_total) VALUES('$date_d', '$date_f', '$preau', '$terrain', '$salle_15', '$cc1', '$cc2', '$table', '$chaise', '$haut_parleurs', '$micro', '$chapiteau_3x3', '$chapiteau_3x4', '$chapiteau_3x6', '$setup', '$cleaning', '$prix_total');";
         $stmtRes = $connexion->prepare($newRes);
@@ -172,7 +214,6 @@ try {
 
     
 } catch(PDOException $e) {
-    echo "Erreur : " . $e->getMessage();
 }
 
 // Fermer la connexion à la base de données
@@ -268,7 +309,9 @@ try {
             <label for="tel">Numéro de téléphone:</label>
             <input type="tel" name="tel" placeholder="Veuillez entrer votre numéro de téléphone"><br>
             <label for="mail">Adresse e-mail:</label>
-            <input type="email" name="mail" placeholder="Veuillez entrer votre adresse e-mail">
+            <input type="email" name="mail" placeholder="Veuillez entrer votre adresse e-mail"><br>
+            <label for="mdp">Mot de passe:</label>
+            <input type="password" name="mdp" placeholder="Veuillez entrer votre mot de passe">
 
         <h1>Infos sur la réservation</h1>
             Je réserve le
@@ -312,8 +355,17 @@ try {
             <input type="checkbox" name="Cleanning" id="">
             <br><br>
 
+            <script>
+                function actualisationVariables() {
+	            document.getElementsByName("").innerHTML = "Puissance en stock : "+puissance_stock;
+                }
+                setInterval(actualisationVariables, 100);
+            </script>
+
+        <div class="Total">
         <h2>Prix total : <?php echo $prix_total ?>€</h2>
             <input type="submit" value="Réserver">
+        </div>
         </form>
         
     </div>
